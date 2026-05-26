@@ -162,21 +162,50 @@ p {
 .section-title {
   font-family: var(--font-heading);
   color: var(--color-primary);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   position: relative;
 }
-.section-title::after {
-  content: '';
-  display: block;
-  width: 3rem;
-  height: 2px;
-  background-color: var(--color-accent);
-  margin-top: 0.75rem;
-}
 .section-title--centered { text-align: center; }
-.section-title--centered::after { margin: 0.75rem auto 0; }
 .section-title--light { color: var(--color-secondary); }
-.section-title--light::after { background-color: var(--color-accent-light); }
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-accent);
+}
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--color-accent), transparent);
+  opacity: 0.5;
+}
+.section-divider--short::before { max-width: 3rem; }
+.section-divider--short::after  { flex: none; width: 0; }
+.section-divider .ornament {
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+.section-title--centered + .section-divider {
+  justify-content: center;
+}
+.section-title--centered + .section-divider::before,
+.section-title--centered + .section-divider::after {
+  max-width: 5rem;
+  flex: none;
+}
+.section-divider--light {
+  color: var(--color-accent-light);
+}
+.section-divider--light::before,
+.section-divider--light::after {
+  background: linear-gradient(to right, transparent, var(--color-accent-light), transparent);
+}
 
 .section-subtitle {
   font-size: 1.05rem;
@@ -455,6 +484,26 @@ p {
 .services {
   padding: var(--section-padding);
   background-color: var(--color-secondary);
+  position: relative;
+}
+.services::before,
+.reviews-scroll::before,
+.faq::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(139,105,20,0.012) 3px, rgba(139,105,20,0.012) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(59,47,47,0.008) 5px, rgba(59,47,47,0.008) 6px),
+    repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(139,105,20,0.006) 8px, rgba(139,105,20,0.006) 9px);
+  z-index: 0;
+}
+.services > *,
+.reviews-scroll > *,
+.faq > * {
+  position: relative;
+  z-index: 1;
 }
 
 .services-grid {
@@ -468,15 +517,35 @@ p {
   display: flex;
   flex-direction: column;
   background-color: var(--color-white);
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(196,164,75,0.35);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
+  position: relative;
   transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+  outline: 1px solid rgba(196,164,75,0.15);
+  outline-offset: -5px;
+}
+.service-card::before,
+.service-card::after {
+  content: '✦';
+  position: absolute;
+  font-size: 0.55rem;
+  color: rgba(196,164,75,0.6);
+  line-height: 1;
+}
+.service-card::before {
+  top: 7px;
+  left: 7px;
+}
+.service-card::after {
+  bottom: 7px;
+  right: 7px;
 }
 .service-card:hover {
   box-shadow: 0 20px 40px rgba(59, 47, 47, 0.12);
   transform: scale(1.01);
-  border-color: rgba(139, 105, 20, 0.5);
+  border-color: rgba(196,164,75,0.65);
+  outline-color: rgba(196,164,75,0.3);
 }
 
 .service-icon {
@@ -518,6 +587,16 @@ p {
   color: var(--color-text-muted);
   line-height: 1.6;
   flex-grow: 1;
+}
+.service-card p::first-letter {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-accent-light);
+  float: left;
+  line-height: 1;
+  margin-right: 0.1em;
+  margin-top: 0.05em;
 }
 
 
@@ -624,6 +703,7 @@ p {
   padding: var(--section-padding);
   padding-bottom: 0;
   background-color: var(--color-secondary);
+  position: relative;
 }
 .reviews-scroll > .container {
   padding-bottom: 0.5rem;
@@ -919,6 +999,7 @@ p {
 .faq {
   padding: var(--section-padding);
   background-color: var(--color-secondary);
+  position: relative;
 }
 
 .faq-list {
