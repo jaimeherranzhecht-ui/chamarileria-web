@@ -1,0 +1,9 @@
+Pon aquí las fotos de restauraciones descargadas de Instagram.
+
+Nómbralas:
+  r01.jpg
+  r02.jpg
+  r03.jpg
+  ...hasta r09.jpg (o más, editando el HTML)
+
+Formato recomendado: JPG, entre 800×800 y 1200×1200 px, orientación cuadrada o vertical.

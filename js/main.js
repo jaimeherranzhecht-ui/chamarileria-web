@@ -141,4 +141,105 @@
     });
   }
 
+  /* --- RESTORATION CAROUSEL 3D ------------------------------ */
+  (function () {
+    var stage    = document.getElementById('carouselStage');
+    if (!stage) return;
+
+    var viewport = document.getElementById('restoCarousel');
+    var dotsWrap = document.getElementById('carouselDots');
+    var btnPrev  = document.getElementById('carouselPrev');
+    var btnNext  = document.getElementById('carouselNext');
+    var items    = Array.prototype.slice.call(stage.querySelectorAll('.carousel-item'));
+    var total    = items.length;
+    var current  = Math.floor(total / 2);
+    var timer    = null;
+
+    /* Build dots */
+    var dots = [];
+    items.forEach(function (_, i) {
+      var dot = document.createElement('button');
+      dot.className = 'carousel-dot' + (i === current ? ' active' : '');
+      dot.setAttribute('aria-label', 'Ir a imagen ' + (i + 1));
+      dot.addEventListener('click', function () { goTo(i); resetTimer(); });
+      dotsWrap.appendChild(dot);
+      dots.push(dot);
+    });
+
+    function updateDots() {
+      dots.forEach(function (dot, i) {
+        dot.classList.toggle('active', i === current);
+      });
+    }
+
+    function render() {
+      items.forEach(function (item, i) {
+        var offset = i - current;
+        /* normalize to [-floor, +ceil] range */
+        var pos = ((offset % total) + total) % total;
+        if (pos > Math.floor(total / 2)) pos = pos - total;
+
+        var isCenter   = pos === 0;
+        var isAdjacent = Math.abs(pos) === 1;
+        var isVisible  = Math.abs(pos) <= 1;
+
+        item.style.transform = [
+          'translateX('  + (pos * 52)                              + '%)',
+          'scale('       + (isCenter ? 1 : isAdjacent ? 0.82 : 0.65) + ')',
+          'rotateY('     + (pos * -12)                             + 'deg)'
+        ].join(' ');
+        item.style.zIndex     = isCenter ? 10 : isAdjacent ? 5 : 1;
+        item.style.opacity    = isCenter ? 1 : isAdjacent ? 0.42 : 0;
+        item.style.filter     = isCenter ? 'blur(0px)' : 'blur(3.5px)';
+        item.style.visibility = isVisible ? 'visible' : 'hidden';
+        item.setAttribute('tabindex', isCenter ? '0' : '-1');
+        item.setAttribute('aria-hidden', isCenter ? 'false' : 'true');
+      });
+      updateDots();
+    }
+
+    function goTo(index) {
+      current = ((index % total) + total) % total;
+      render();
+    }
+
+    function next() { goTo(current + 1); }
+    function prev() { goTo(current - 1); }
+
+    function startTimer() {
+      timer = setInterval(next, 4000);
+    }
+
+    function resetTimer() {
+      clearInterval(timer);
+      startTimer();
+    }
+
+    /* Swipe support */
+    var touchStartX = 0;
+    viewport.addEventListener('touchstart', function (e) {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    viewport.addEventListener('touchend', function (e) {
+      var dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) { dx < 0 ? next() : prev(); resetTimer(); }
+    }, { passive: true });
+
+    /* Keyboard on focused center item */
+    viewport.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { next(); resetTimer(); }
+      if (e.key === 'ArrowLeft')  { prev(); resetTimer(); }
+    });
+
+    btnPrev.addEventListener('click', function () { prev(); resetTimer(); });
+    btnNext.addEventListener('click', function () { next(); resetTimer(); });
+
+    /* Pause on hover */
+    viewport.addEventListener('mouseenter', function () { clearInterval(timer); });
+    viewport.addEventListener('mouseleave', startTimer);
+
+    render();
+    startTimer();
+  }());
+
 }());
